@@ -188,7 +188,6 @@ function Coin() {
   const setDarkAtom = useSetRecoilState(isDarkAtom);
   const toggleDarkAtom = () => setDarkAtom(prev => !prev);
   const isDark = useRecoilValue(isDarkAtom);
-
   return (
     <Container>
       <Helmet>
