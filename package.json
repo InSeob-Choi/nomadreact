@@ -55,5 +55,5 @@
     "@types/react-query": "^1.2.9",
     "@types/styled-components": "^5.1.25"
   },
-  "homepage": "https://github.com/InSeob-Choi/nomadreact"
+  "homepage": "https://InSeob-Choi.github.io/nomadreact"
 }
