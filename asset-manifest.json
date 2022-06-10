@@ -1,0 +1,10 @@
+{
+  "files": {
+    "main.js": "/nomadreact/static/js/main.c5e4842a.js",
+    "index.html": "/nomadreact/index.html",
+    "main.c5e4842a.js.map": "/nomadreact/static/js/main.c5e4842a.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.c5e4842a.js"
+  ]
+}
