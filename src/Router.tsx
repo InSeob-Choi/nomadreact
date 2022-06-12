@@ -4,10 +4,10 @@ import Coins from './routes/Coins';
 
 function Router() {
   return (
-    <BrowserRouter basename={process.env.PUBLIC_URL}>
+    <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Coins />} />
-        <Route path="/:coinID/*" element={<Coin />} />
+        <Route path={`${process.env.PUBLIC_URL}/`} element={<Coins />} />
+        <Route path={`${process.env.PUBLIC_URL}/:coinID/*`} element={<Coin />} />
       </Routes>
     </BrowserRouter>
   );

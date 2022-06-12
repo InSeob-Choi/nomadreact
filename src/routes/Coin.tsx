@@ -201,7 +201,7 @@ function Coin() {
           {state?.name ? state.name : loading ? "Loading..." : infoData && infoData[0].name}
         </Title>
         <HomeBtn>
-          <Link to={"../"}>
+          <Link to="/">
             <FontAwesomeIcon icon={faHouseChimney} />
           </Link>
         </HomeBtn>
@@ -242,10 +242,10 @@ function Coin() {
           <Description dangerouslySetInnerHTML={{__html: descriptionData?.description.en} as {__html: string}}></Description>
           <Tabs>
             <Tab isActive={(chartLineMatch || chartCandleMatch) !== null}>
-              <Link to={`./chart_line`}>Chart</Link>
+              <Link to={`/${coinID}/chart_line`}>Chart</Link>
             </Tab>
             <Tab isActive={priceMatch !== null}>
-              <Link to={`./price`}>Price</Link>
+              <Link to={`/${coinID}/price`}>Price</Link>
             </Tab>
           </Tabs>
           <Routes>
