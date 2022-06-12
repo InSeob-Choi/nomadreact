@@ -5,6 +5,8 @@ import { faChartLine, faChartColumn } from '@fortawesome/free-solid-svg-icons'
 import { fetchCoinOhlcDay14 } from '../api';
 import { useQuery } from 'react-query';
 import ReactApexChart from 'react-apexcharts';
+import { useRecoilValue } from 'recoil';
+import { isDarkAtom } from '../atoms';
 
 interface ChartProps {
   coinID: string;
@@ -21,6 +23,7 @@ function ChartCandle({coinID}: ChartProps) {
       y: [Number(item[1].toFixed(3)), Number(item[2].toFixed(3)), Number(item[3].toFixed(3)), Number(item[4].toFixed(3))]
     }
   }) as {x: Date; y: number[]}[];
+  const isDark = useRecoilValue(isDarkAtom);
 
   return (
     <>
@@ -67,7 +70,10 @@ function ChartCandle({coinID}: ChartProps) {
               xaxis: {
                 type: "datetime",
                 title: {
-                  text: "Date"
+                  text: "Date",
+                  style: {
+                    color: isDark ? "white" : "#004d40"
+                  },
                 },
                 axisTicks: {
                   show: true
@@ -75,11 +81,28 @@ function ChartCandle({coinID}: ChartProps) {
                 tooltip: {
                   enabled: true
                 },
+                labels: {
+                  style: {
+                    colors: isDark ? "white" : "#004d40"
+                  }
+                },
+                axisBorder: {
+                  show: true,
+                  color: isDark ? "white" : "#004d40"
+                },
               },
               yaxis: {
                 title: {
                   text: "Dollar",
+                  style: {
+                    color: isDark ? "white" : "#004d40"
+                  }
                 },
+                labels: {
+                  style: {
+                    colors: [isDark ? "white" : "#004d40"]
+                  }
+                }
               },
               grid: {
                 column: {
