@@ -4,10 +4,12 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { RecoilRoot } from 'recoil';
 import App from './App';
 
-const rootNode = document.getElementById("root") as HTMLElement;
-const queryClient = new QueryClient();
+const queryClient = new QueryClient()
 
-ReactDOM.createRoot(rootNode).render(
+const root = ReactDOM.createRoot(
+  document.getElementById('root') as HTMLElement
+);
+root.render(
   <React.StrictMode>
     <RecoilRoot>
       <QueryClientProvider client={queryClient}>
@@ -16,12 +18,3 @@ ReactDOM.createRoot(rootNode).render(
     </RecoilRoot>
   </React.StrictMode>
 );
-
-// ReactDOM.render(
-//   <React.StrictMode>
-//     <ThemeProvider theme={theme}>
-//       <App />
-//     </ThemeProvider>
-//   </React.StrictMode>,
-//   document.getElementById("root")
-// );

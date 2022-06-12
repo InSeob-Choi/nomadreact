@@ -1,9 +1,9 @@
+import Router from './Router';
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
-import Router from "./Router";
-import { ReactQueryDevtools } from 'react-query/devtools'
-import { darkTheme, lightTheme } from './theme';
+import { ReactQueryDevtools } from 'react-query/devtools';
 import { useRecoilValue } from 'recoil';
 import { isDarkAtom } from './atoms';
+import { darkTheme, lightTheme } from './theme';
 
 const GlobalStyle = createGlobalStyle`
   @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400&display=swap');
@@ -13,12 +13,12 @@ const GlobalStyle = createGlobalStyle`
   del, dfn, em, img, ins, kbd, q, s, samp,
   small, strike, strong, sub, sup, tt, var,
   b, u, i, center,
-  dl, dt, dd, menu, ol, ul, li,
+  dl, dt, dd, ol, ul, li,
   fieldset, form, label, legend,
   table, caption, tbody, tfoot, thead, tr, th, td,
-  article, aside, canvas, details, embed,
-  figure, figcaption, footer, header, hgroup,
-  main, menu, nav, output, ruby, section, summary,
+  article, aside, canvas, details, embed, 
+  figure, figcaption, footer, header, hgroup, 
+  menu, nav, output, ruby, section, summary,
   time, mark, audio, video {
     margin: 0;
     padding: 0;
@@ -28,18 +28,20 @@ const GlobalStyle = createGlobalStyle`
     vertical-align: baseline;
   }
   /* HTML5 display-role reset for older browsers */
-  article, aside, details, figcaption, figure,
-  footer, header, hgroup, main, menu, nav, section {
+  article, aside, details, figcaption, figure, 
+  footer, header, hgroup, menu, nav, section {
     display: block;
   }
-  /* HTML5 hidden-attribute fix for newer browsers */
-  *[hidden] {
-      display: none;
+  * {
+    box-sizing: border-box;
   }
   body {
     line-height: 1;
+    font-family: 'Source Sans Pro', sans-serif;
+    background-color: ${props => props.theme.bgColor};
+    color: ${props => props.theme.textColor};
   }
-  menu, ol, ul {
+  ol, ul {
     list-style: none;
   }
   blockquote, q {
@@ -54,22 +56,15 @@ const GlobalStyle = createGlobalStyle`
     border-collapse: collapse;
     border-spacing: 0;
   }
-  * {
-    box-sizing: border-box;
-  }
-  body {
-    font-family: 'Source Sans Pro', sans-serif;
-    background-color: ${props => props.theme.bgColor};
-    color: ${props => props.theme.textColor};
-  }
   a {
     text-decoration: none;
-    color: inherit; // 링크 후에 색깔이 보라색으로 변경되지 않고, 계속 원래 부모 색깔이 반영하도록 함.
+    color: inherit;
   }
 `
 
 function App() {
   const isDark = useRecoilValue(isDarkAtom);
+
   return (
     <>
       <ThemeProvider theme={isDark ? darkTheme : lightTheme}>

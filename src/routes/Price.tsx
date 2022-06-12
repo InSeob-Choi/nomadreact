@@ -1,71 +1,67 @@
 import { useQuery } from 'react-query';
 import styled from 'styled-components';
-import { fetchCoinHistory } from '../api';
+import { fetchCoinInfo } from '../api';
+import { InfoDataProps } from './Coin';
 
-const Container = styled.div`
+const Loader = styled.span`
+text-align: center;
+display: block;
+`
+const Overview = styled.div`
   display: flex;
   justify-content: space-between;
-  background-color: rgba(0, 0, 0, 0.5);
-  padding: 10px 10px;
+  background-color: rgba(0,0,0,0.3);
+  padding: 10px 20px;
   border-radius: 10px;
   margin-bottom: 10px;
+  transition: color 0.2s;
+  &:hover {
+    color: #ff7e7e;
+  }
+`
+const OverviewItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  span:first-child {
+    font-size: 10px;
+    font-weight: 400;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
 `
 
-const PriceTitle = styled.span`
-  flex: 60%;
-  padding-left: 30px;
-`
-
-const PriceItem = styled.span`
-  flex: 40%;
-  color: ${props => props.theme.priceColor};
-`
-
-interface PriceProps {
-  coinId: string;
+interface ChartProps {
+  coinID: string;
 }
 
-interface IHistorical {
-  time_open: string;
-  time_close: string;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-  volume: number;
-  market_cap: number;
-}
-
-function Price({coinId}: PriceProps) {
-  const {isLoading, data} = useQuery<IHistorical[]>(
-    ["ohlcv", coinId],
-    () => fetchCoinHistory(coinId),
-  );
+function Price({coinID}: ChartProps) {
+  const {isLoading, data} = useQuery<InfoDataProps[]>(["info", coinID], () => fetchCoinInfo(coinID), {refetchInterval: 1000*60*60});
 
   return (
-    <div>
-      <Container>
-        <PriceTitle>Opening price</PriceTitle>
-        <PriceItem>$ {data ? data[14]?.open.toFixed(3) : null}</PriceItem>
-      </Container>
-      <Container>
-        <PriceTitle>Highest price</PriceTitle>
-        <PriceItem>$ {data ? data[14]?.high.toFixed(3) : null}</PriceItem>
-      </Container>
-      <Container>
-        <PriceTitle>Lowest price</PriceTitle>
-        <PriceItem>$ {data ? data[14]?.low.toFixed(3) : null}</PriceItem>
-      </Container>
-      <Container>
-        <PriceTitle>Closing price</PriceTitle>
-        <PriceItem>$ {data ? data[14]?.close.toFixed(3) : null}</PriceItem>
-      </Container>
-      <Container>
-        <PriceTitle>Total quantity</PriceTitle>
-        <PriceItem>{data ? data[14]?.volume : null}</PriceItem>
-      </Container>
-    </div>
-  );
+    <>
+      {isLoading ? <Loader>Loading...</Loader> : (
+        <>
+          <Overview style={{marginTop: "16px"}}>
+            <OverviewItem>Highest Price (24H)</OverviewItem>
+            <OverviewItem>$ {data && data[0].high_24h}</OverviewItem>
+          </Overview>
+          <Overview>
+            <OverviewItem>Lowest Price (24H)</OverviewItem>
+            <OverviewItem>$ {data && data[0].low_24h}</OverviewItem>
+          </Overview>
+          <Overview>
+            <OverviewItem>Price Change (24H)</OverviewItem>
+            <OverviewItem>{data && data[0].price_change_24h.toString()[0] === "-" ? `- $ ${Number(data[0].price_change_24h.toString().slice(1)).toFixed(3)}` : (data && `+ $ ${data[0].price_change_24h.toFixed(3)}`)}</OverviewItem>
+          </Overview>
+          <Overview>
+            <OverviewItem>Price Change Percentage (24H)</OverviewItem>
+            <OverviewItem>{data && data[0].price_change_percentage_24h.toString()[0] === "-" ? `- ${Number(data[0].price_change_percentage_24h.toString().slice(1)).toFixed(3)}%` : (data && `+ ${data[0].price_change_percentage_24h.toFixed(3)}%`)}</OverviewItem>
+          </Overview>
+        </>
+      )}
+    </>
+  )
 }
 
 export default Price;

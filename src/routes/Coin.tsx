@@ -1,60 +1,47 @@
+import { Helmet } from 'react-helmet';
 import { useQuery } from 'react-query';
-import { Link, Route, Routes, useLocation, useMatch, useParams } from 'react-router-dom';
+import { Link, useMatch } from 'react-router-dom';
+import { Route, Routes, useLocation, useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import { fetchCoinInfo, fetchCoinTickers } from '../api';
-import {Helmet} from "react-helmet";
-import Chart from './Chart';
+import { fetchCoinInfo, fetchCoinDescription } from '../api';
+import ChartLine from './ChartLine';
+import ChartCandle from './ChartCandle';
 import Price from './Price';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { isDarkAtom } from '../atoms';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMoon, faSun, faHouseChimney } from '@fortawesome/free-solid-svg-icons'
+import { useRecoilState } from 'recoil';
+import { ThemeBtn } from './Coins';
 
 const Container = styled.div`
   padding: 0px 20px;
   max-width: 480px;
   margin: 0 auto;
-`;
-
+  `
 const Header = styled.header`
-  height: 20vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const IconBox = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin: 0 10px;
-  margin-bottom: 10px;
-`
-
-const Icon = styled.button`
-  width:30px;
-  height:30px;
-  background-color: #3E968D;
-  border: none;
-  border-radius: 5px;
-`
-
+  height: 14vh;
+  text-align: center;
+  line-height: 14vh;
+  position: relative;
+  `
 const Title = styled.h1`
   color: ${props => props.theme.accentColor};
   font-size: 48px;
-`
-
+  font-weight: 600;
+  `
 const Loader = styled.span`
-  text-align: center;
-  display: block;
+text-align: center;
+display: block;
 `
-
 const Overview = styled.div`
   display: flex;
   justify-content: space-between;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0,0,0,0.3);
   padding: 10px 20px;
   border-radius: 10px;
+  margin-bottom: 10px;
 `
-
-const OverviewItem =styled.div`
+const OverviewItem = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -65,24 +52,21 @@ const OverviewItem =styled.div`
     margin-bottom: 5px;
   }
 `
-
 const Description = styled.div`
-  margin: 20px 0px;
+  margin: 16px 2px 10px 2px;
 `
-
 const Tabs = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  margin: 25px 0px;
+  margin: 20px 0 6px 0;
   gap: 10px;
 `
-
 const Tab = styled.span<{isActive: boolean}>`
   text-align: center;
   text-transform: uppercase;
   font-size: 12px;
   font-weight: 400;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.3);
   padding: 7px 0px;
   border-radius: 10px;
   color: ${props => props.isActive ? props.theme.accentColor : props.theme.textColor};
@@ -90,165 +74,187 @@ const Tab = styled.span<{isActive: boolean}>`
     display: block;
   }
 `
+const HomeBtn = styled.button`
+  font-size: 20px;
+  background-color: #3E968D;
+  border: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 5px;
+  color: yellow;
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translate(0, -50%);
+`
 
-interface RouteParams {
-  coinId: string;
+interface Params {
+  coinID: string;
 }
-
-interface RouterState {
+interface RouteState {
   state: {
-    name: string
+    name: string;
   }
 }
-
-interface InfoData {
+export interface InfoDataProps {
   id: string;
-  name: string;
   symbol: string;
-  rank: number;
-  is_new: boolean;
-  is_active: boolean;
-  type: string;
-  description: string;
-  message: string;
-  open_source: boolean;
-  started_at: string;
-  development_status: string;
-  hardware_wallet: boolean;
-  proof_type: string;
-  org_structure: string;
-  hash_algorithm: string;
-  first_data_at: string;
-  last_data_at: string;
-}
-
-interface TickersData {
-  id: string;
   name: string;
-  symbol: string;
-  rank: number;
+  image: string;
+  current_price: number;
+  market_cap: number;
+  market_cap_rank: number;
+  fully_diluted_valuation: number;
+  total_volume: number;
+  high_24h: number;
+  low_24h: number;
+  price_change_24h: number;
+  price_change_percentage_24h: number;
+  market_cap_change_24h: number;
+  market_cap_change_percentage_24h: number;
   circulating_supply: number;
   total_supply: number;
   max_supply: number;
-  beta_value: number;
-  first_data_at: string;
+  ath: number;
+  ath_change_percentage: number;
+  ath_date: string;
+  atl: number;
+  atl_change_percentage: number;
+  atl_date: string;
+  roi: object;
   last_updated: string;
-  quotes: {
-    USD: {
-      ath_date: string;
-      ath_price: number;
-      market_cap: number;
-      market_cap_change_24h: number;
-      percent_change_1h: number;
-      percent_change_1y: number;
-      percent_change_6h: number;
-      percent_change_7d: number;
-      percent_change_12h: number;
-      percent_change_15m: number;
-      percent_change_24h: number;
-      percent_change_30d: number;
-      percent_change_30m: number;
-      percent_from_price_ath: number;
-      price: number;
-      volume_24h: number;
-      volume_24h_change_24h: number;
-    };
+  price_change_percentage_24h_in_currency: number;
+}
+
+interface DescriptionDataProps {
+  id: string;
+  symbol: string;
+  name: string;
+  asset_platform_id: object;
+  platforms: object;
+  block_time_in_minutes: number;
+  hashing_algorithm: object;
+  categories: object;
+  public_notice: object;
+  additional_notices: object;
+  description: {
+    en: string;
   };
+  links: {
+    homepage: string[]
+  };
+  image: object;
+  country_origin: string;
+  genesis_date: object;
+  sentiment_votes_up_percentage: number;
+  sentiment_votes_down_percentage: number;
+  market_cap_rank: number;
+  coingecko_rank: number;
+  coingecko_score: number;
+  developer_score: number;
+  community_score: number;
+  liquidity_score: number;
+  public_interest_score: number;
+  public_interest_stats: object;
+  status_updates: object;
+  last_updated: string;
+  tickers: object;
 }
 
 function Coin() {
-  const {coinId} = useParams<keyof RouteParams>(); // 사실 < >안에 타입 안 써도 됨. 자동으로 string | undefined 됨
-  const {state} = useLocation() as RouterState;
-  const priceMatch = useMatch("/:coinId/price"); // 특정 url에 들어가면, 관련 object를 받음.
-  const chartMatch = useMatch("/:coinId/chart");
-  const {isLoading: infoLoading, data: infoData} = useQuery<InfoData>(
-    ["info", coinId],
-    () => fetchCoinInfo(coinId!)
-  );
-  const {isLoading: tickersLoading, data: tickersData} = useQuery<TickersData>(
-    ["tickers", coinId],
-    () => fetchCoinTickers(coinId!),
-    {
-      refetchInterval: 5000 // 자동으로 5초마다 fetch하게 함.
-    }
-  );
-  // const [loading, setLoading] = useState(true);
-  // const [info, setInfo] = useState<InfoData>();
-  // const [priceInfo, setPriceInfo] = useState<TickersData>();
-  // useEffect(() => {
-  //   (async () => {
-  //     const infoData = await (await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}`)).json();
-  //     const TickersData = await (await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)).json();
-  //     setInfo(infoData);
-  //     setPriceInfo(TickersData);
-  //     setLoading(false);
-  //   })();
-  // }, [coinId])
-  const loading = infoLoading && tickersLoading;
-  const setDarkAtom = useSetRecoilState(isDarkAtom);
-  const toggleDarkAtom = () => setDarkAtom(prev => !prev);
-  const isDark = useRecoilValue(isDarkAtom);
+  const {coinID} = useParams() as unknown as Params; // coin.id를 파라미터에서 가져오기 (fallback 용도)
+  const {state} = useLocation() as RouteState;       // coin.name을 state에서 가져오기
+  const priceMatch = useMatch("/:coinID/price");
+  const chartLineMatch = useMatch("/:coinID/chart_line");
+  const chartCandleMatch = useMatch("/:coinID/chart_candle");
+  const {isLoading: infoLoading, data: infoData} = useQuery<InfoDataProps[]>(["info", coinID], () => fetchCoinInfo(coinID), {refetchInterval: 1000*60*60});
+  const {isLoading: descriptionLoading, data: descriptionData} = useQuery<DescriptionDataProps>(["description", coinID], () => fetchCoinDescription(coinID));
+  const loading = infoLoading && descriptionLoading;
+  const [isDark, setIsDark] = useRecoilState(isDarkAtom);
+  const darkThemeClick = () => setIsDark(prev => !prev);
+  /*
+  const [loading, setLoading] = useState(true);
+  const [info, setInfo] = useState<InfoDataProps>();
+  const [price,  setPrice] = useState<PriceDataProps>();
+  useEffect(() => {
+    (async () => {
+      const resInfo = await fetch(`https://api.coinpaprika.com/v1/coins/${coinID}`);
+      const infoData = await resInfo.json();
+      const resPrice = await fetch(`https://api.coinpaprika.com/v1/tickers/${coinID}`)
+      const priceData = await resPrice.json();
+      setInfo(infoData);
+      setPrice(priceData);
+      setLoading(false);
+    })();
+  }, [coinID])
+  */
+
   return (
     <Container>
       <Helmet>
         <title>
-          {state? state.name : loading ? "Loading..." : infoData?.name}
+          {state?.name ? state.name : loading ? "Loading..." : infoData && infoData[0].name}
         </title>
       </Helmet>
       <Header>
-        <Title>{state? state.name : loading ? "Loading..." : infoData?.name}</Title>
+        <Title>
+          {state?.name ? state.name : loading ? "Loading..." : infoData && infoData[0].name}
+        </Title>
+        <HomeBtn>
+          <FontAwesomeIcon icon={faHouseChimney} />
+        </HomeBtn>
+        <ThemeBtn onClick={darkThemeClick} isDark={isDark}>
+          {isDark ? (
+            <FontAwesomeIcon icon={faMoon} />
+          ) : (
+            <FontAwesomeIcon icon={faSun} />
+          ) }
+        </ThemeBtn>
       </Header>
-      <IconBox>
-        <Link to={"/"}>
-          <Icon>🏠</Icon>
-        </Link>
-        <Icon onClick={toggleDarkAtom}>{isDark ? "🌙" : "🌞"}</Icon>
-      </IconBox>
-      {loading ? (
-        <Loader>Loading...</Loader>
-      ) : (
+      {loading ? <Loader>Loading...</Loader> : (
         <>
           <Overview>
             <OverviewItem>
-              <span>Rank:</span>
-              <span>{infoData?.rank}</span>
+              <span>Rank</span>
+              <span>{infoData && infoData[0].market_cap_rank}</span>
             </OverviewItem>
             <OverviewItem>
-              <span>Symbol:</span>
-              <span>{infoData?.symbol}</span>
+              <span>Symbol</span>
+              <span>{infoData && infoData[0].symbol}</span>
             </OverviewItem>
             <OverviewItem>
-              <span>Price:</span>
-              <span>{tickersData?.quotes.USD.price.toFixed(3)}</span>
+              <span>Current Price</span>
+              <span>$ {infoData && infoData[0].current_price}</span>
             </OverviewItem>
           </Overview>
-          <Description>{infoData?.description}</Description>
           <Overview>
             <OverviewItem>
-              <span>Total Suply</span>
-              <span>{tickersData?.total_supply}</span>
+              <span>Homepage</span>
+              <a href={descriptionData?.links.homepage[0]} target="_blank" rel="noreferrer">{descriptionData?.links.homepage[0]}</a>
             </OverviewItem>
             <OverviewItem>
-              <span>Max Supply:</span>
-              <span>{tickersData?.max_supply}</span>
+              <span>Market Capitalization</span>
+              <span>$ {infoData && infoData[0].market_cap}</span>
             </OverviewItem>
           </Overview>
+          <Description dangerouslySetInnerHTML={{__html: descriptionData?.description.en} as {__html: string}}></Description>
           <Tabs>
-            <Tab isActive={chartMatch !== null}>
-              <Link to={`/${coinId}/chart`}>Chart</Link>
+            <Tab isActive={(chartLineMatch || chartCandleMatch) !== null}>
+              <Link to={`/${coinID}/chart_line`}>Chart</Link>
             </Tab>
             <Tab isActive={priceMatch !== null}>
-                <Link to={`/${coinId}/price`}>Price</Link>
+              <Link to={`/${coinID}/price`}>Price</Link>
             </Tab>
           </Tabs>
           <Routes>
-            <Route path={"chart"} element={<Chart coinId={coinId!} />}/>
-            <Route path={"price"} element={<Price coinId={coinId!} />}/>
+            <Route path="price" element={<Price coinID={coinID} />} />
+            <Route path="chart_line" element={<ChartLine coinID={coinID} />} />
+            <Route path="chart_candle" element={<ChartCandle coinID={coinID} />} />
           </Routes>
         </>
       )}
     </Container>
-  )
+  );
 }
 
 export default Coin;
