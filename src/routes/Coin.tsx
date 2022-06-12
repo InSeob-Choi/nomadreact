@@ -77,6 +77,7 @@ const Tab = styled.span<{isActive: boolean}>`
 const HomeBtn = styled.button`
   font-size: 20px;
   background-color: #3E968D;
+  text-align: center;
   border: 0;
   width: 36px;
   height: 36px;
