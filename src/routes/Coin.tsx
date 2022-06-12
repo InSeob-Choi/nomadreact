@@ -162,8 +162,7 @@ interface DescriptionDataProps {
 }
 
 function Coin() {
-  const {coinID} = useParams() as unknown as Params; // coin.id를 파라미터에서 가져오기 (fallback 용도) // gh-pages에서 "nomadreact"라는 repository의 이름을 파라미터로 착각해 버림..
-  console.log(coinID);
+  const {coinID} = useParams() as unknown as Params; // coin.id를 파라미터에서 가져오기 (fallback 용도)
   const {state} = useLocation() as RouteState;       // coin.name을 state에서 가져오기
   const priceMatch = useMatch("/:coinID/price");
   const chartLineMatch = useMatch("/:coinID/chart_line");
@@ -194,15 +193,15 @@ function Coin() {
     <Container>
       <Helmet>
         <title>
-          {state?.name ? state.name : (loading ? "Loading..." : infoData && infoData[0].name)}
+          {state?.name ? state.name : loading ? "Loading..." : infoData && infoData[0].name}
         </title>
       </Helmet>
       <Header>
         <Title>
-          {state?.name ? state.name : (loading ? "Loading..." : infoData && infoData[0].name)}
+          {state?.name ? state.name : loading ? "Loading..." : infoData && infoData[0].name}
         </Title>
         <HomeBtn>
-          <Link to="../">
+          <Link to={"/"}>
             <FontAwesomeIcon icon={faHouseChimney} />
           </Link>
         </HomeBtn>
@@ -243,16 +242,16 @@ function Coin() {
           <Description dangerouslySetInnerHTML={{__html: descriptionData?.description.en} as {__html: string}}></Description>
           <Tabs>
             <Tab isActive={(chartLineMatch || chartCandleMatch) !== null}>
-              <Link to={`./chart_line`}>Chart</Link>
+              <Link to={`/${coinID}/chart_line`}>Chart</Link>
             </Tab>
             <Tab isActive={priceMatch !== null}>
-              <Link to={`./price`}>Price</Link>
+              <Link to={`/${coinID}/price`}>Price</Link>
             </Tab>
           </Tabs>
           <Routes>
+            <Route path="price" element={<Price coinID={coinID} />} />
             <Route path="chart_line" element={<ChartLine coinID={coinID} />} />
             <Route path="chart_candle" element={<ChartCandle coinID={coinID} />} />
-            <Route path="price" element={<Price coinID={coinID} />} />
           </Routes>
         </>
       )}
