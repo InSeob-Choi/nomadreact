@@ -249,9 +249,9 @@ function Coin() {
             </Tab>
           </Tabs>
           <Routes>
-            <Route path={"price"} element={<Price coinID={coinID} />} />
-            <Route path={"chart_line"} element={<ChartLine coinID={coinID} />} />
-            <Route path={"chart_candle"} element={<ChartCandle coinID={coinID} />} />
+            <Route path="price" element={<Price coinID={coinID} />} />
+            <Route path="chart_line" element={<ChartLine coinID={coinID} />} />
+            <Route path="chart_candle" element={<ChartCandle coinID={coinID} />} />
           </Routes>
         </>
       )}
