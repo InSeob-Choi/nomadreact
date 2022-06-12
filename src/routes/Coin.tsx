@@ -243,10 +243,10 @@ function Coin() {
           <Description dangerouslySetInnerHTML={{__html: descriptionData?.description.en} as {__html: string}}></Description>
           <Tabs>
             <Tab isActive={(chartLineMatch || chartCandleMatch) !== null}>
-              <Link to={`/${coinID}/chart_line`}>Chart</Link>
+              <Link to={`chart_line`}>Chart</Link>
             </Tab>
             <Tab isActive={priceMatch !== null}>
-              <Link to={`/${coinID}/price`}>Price</Link>
+              <Link to={`price`}>Price</Link>
             </Tab>
           </Tabs>
           <Routes>
