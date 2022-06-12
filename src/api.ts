@@ -15,8 +15,6 @@ export function fetchCoinInfo(coinID: string) {
 export function fetchCoinDescription(coinID: string) {
   return (
     fetch(`${BASE_URL}/coins/${coinID}?localization=false&market_data=false&community_data=false&developer_data=false&sparkline=false`).then(res => res.json())
-    // https://api.coingecko.com/api/v3/coins/nomadreact?localization=false&market_data=false&community_data=false&developer_data=false&sparkline=false 
-
   )
 }
 
